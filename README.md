@@ -4,27 +4,17 @@ Editor web de PDF en **HTML, CSS y JavaScript**, para utilizarlo en local. Los d
 
 Repositorio: [AlejandroLTweb/PDFLinks](https://github.com/AlejandroLTweb/PDFLinks).
 
-## Abrir el proyecto
+## Abrir PDFLink: solo doble clic
 
-Necesitas un navegador moderno, como Chrome o Edge, y **Node.js 22.13 o posterior** para servir los archivos de la web en tu propio ordenador.
+1. En GitHub, pulsa **Code → Download ZIP**.
+2. **Extrae la carpeta completa** del ZIP. Conserva juntos todos los archivos.
+3. Haz doble clic en **index.html**. Se abrirá PDFLink en tu navegador.
 
-```sh
-git clone https://github.com/AlejandroLTweb/PDFLinks.git
-cd PDFLinks
-npm start
-```
+**No necesitas terminal, Node.js, npm, instalación ni conexión a Internet.** Usa Chrome o Edge actualizado. Si Windows abre el HTML con otro programa, elige **Abrir con → Google Chrome / Microsoft Edge**.
 
-Abre **http://127.0.0.1:4177**. Las bibliotecas se incluyen en el repositorio: **no hace falta ejecutar `npm install` ni tener conexión a Internet para utilizar el editor**.
+El acceso opcional **Abrir_PDFLink.cmd** también abre `index.html` directamente y no requiere Node.js. No abras el HTML desde dentro del ZIP, porque Windows podría extraer solo ese archivo y dejar atrás sus bibliotecas.
 
-En Windows también puedes hacer doble clic en **Abrir_PDFLink.cmd** después de descargar y extraer el repositorio completo. No es un instalador: abre el servidor local y el navegador. Puedes detenerlo con `Ctrl+C`.
-
-Se utiliza un servidor estático local porque los navegadores restringen la carga de módulos JavaScript desde `file://`. Abrir `index.html` con doble clic no carga el motor PDF. Node solo entrega los archivos de la web; no recibe ni procesa tus PDF. El servidor escucha exclusivamente en `127.0.0.1`, admite GET/HEAD y no tiene una ruta para subir archivos.
-
-Si el puerto está ocupado:
-
-```sh
-npm start -- --port 4178
-```
+Los scripts del visor se incluyen preparados para cargar desde `file://`. El procesamiento usa workers en memoria; si el navegador no permite esos workers, el motor dispone de una alternativa local en la misma pestaña. No se inicia ningún servidor ni programa externo al abrir el HTML.
 
 ## Funciones
 
@@ -70,7 +60,7 @@ No se garantiza una reducción concreta: los PDF ya optimizados pueden reducirse
 - No hay cuentas, analítica, telemetría, cookies de la aplicación ni servicios externos durante su uso.
 - No se usan CDN en tiempo de ejecución: los motores PDF están incluidos localmente.
 - No se guardan los documentos ni las firmas en `localStorage`, IndexedDB ni bases de datos.
-- Los PDF seleccionados se leen con la API de archivos del navegador. El servidor estático no los recibe.
+- Los PDF seleccionados se leen con la API de archivos del navegador, sin servidor de procesamiento.
 - El resultado se descarga solo cuando pulsas **Descargar PDF**. El navegador y el sistema operativo pueden aplicar sus propias políticas de descargas, sincronización o memoria virtual.
 - La política de contenido bloquea conexiones a orígenes externos.
 
@@ -99,12 +89,18 @@ No se garantiza una reducción concreta: los PDF ya optimizados pueden reducirse
 | `pdf-engine.js` | Unión, exportación vectorial y compresión de imágenes. |
 | `pdf-lib.min.js` | Biblioteca PDF-LIB 1.17.1 (MIT). |
 | `pdf.min.mjs`, `pdf.worker.min.mjs` | PDF.js 6.5.438 (Apache 2.0). |
-| `serve.mjs` | Servidor estático local, sin dependencias externas. |
+| `pdf.viewer.local.js`, `pdf.worker.local.js` | Adaptaciones de PDF.js ya preparadas para apertura directa de archivos. |
+| `pdf.local-runtime.js` | Arranque local y workers creados en memoria, sin importar módulos desde disco. |
+| `build-local.cjs` | Utilidad de desarrollo para regenerar las adaptaciones incluidas. |
+| `serve.mjs` | Servidor estático opcional para desarrollo. No se necesita para usar PDFLink. |
 | `engine.test.cjs` | Pruebas automáticas con PDF sintéticos. |
+| `local-startup.test.cjs` | Pruebas del arranque sin servidor y del procesamiento en workers locales. |
 
 No utiliza React, Vite, Electron, Python ni un backend de procesamiento. No necesita compilación.
 
 ## Comprobaciones
+
+Estas herramientas son **solo para desarrollo**, no para las personas que usan el editor. Requieren Node.js 22.13 o posterior:
 
 ```sh
 npm test
@@ -112,6 +108,10 @@ npm run check
 ```
 
 Las pruebas comprueban unión y orden de páginas, geometría con giros y recortes, exportación vectorial, transparencias, historial, predictores de imágenes, selección de imágenes comprimibles, rechazo de entradas no válidas y referencias locales de la interfaz. No leen documentos personales. La conversión JPEG del navegador y la interacción visual requieren una comprobación en un navegador real.
+
+También se comprueba que los scripts clásicos cargan un PDF sin módulos, sin `fetch` ni servidor, que varios PDF pueden usar workers independientes y que un PDF no válido libera su worker. No se modifica la seguridad del navegador.
+
+Para regenerar los archivos de distribución después de actualizar los motores originales: `npm run build:local`. Los archivos generados ya están incluidos, por lo que el usuario final no ejecuta ese comando. Como opción de desarrollo, `npm start` conserva el servidor estático en `http://127.0.0.1:4177`.
 
 ## Licencias
 

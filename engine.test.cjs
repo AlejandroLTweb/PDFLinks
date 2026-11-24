@@ -132,7 +132,7 @@ test('invalid sources, invalid export modes and empty exports are rejected',asyn
 
 test('HTML includes local assets, CSP and no external scripts or analytics',async()=>{
   const root=path.resolve(__dirname),html=await fs.readFile(path.join(root,'index.html'),'utf8');
-  assert.match(html,/Content-Security-Policy/);assert.match(html,/connect-src 'self'/);
+  assert.match(html,/Content-Security-Policy/);assert.match(html,/connect-src 'none'/);
   for(const match of html.matchAll(/<(?:script|link)[^>]+(?:src|href)="([^"]+)"/g)){
     assert.ok(!/^https?:/.test(match[1]),match[1]);await fs.access(path.join(root,match[1]));
   }

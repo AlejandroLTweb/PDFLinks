@@ -4,19 +4,22 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="description" content="Visualiza, une, comprime y completa tus PDF en tu navegador. Sin subir documentos a ningún servidor.">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data: blob:; connect-src 'self'; worker-src 'self' blob:; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' file: 'wasm-unsafe-eval'; style-src 'self' file: 'unsafe-inline'; img-src 'self' file: data: blob:; font-src 'self' file: data: blob:; connect-src 'none'; worker-src blob:; object-src 'none'; base-uri 'none'; form-action 'none'">
   <meta name="referrer" content="no-referrer">
   <title>PDFLink · Tus PDF, en local</title>
   <link rel="icon" href="icon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="styles.css">
   <script src="pdf-lib.min.js" defer></script>
+  <script src="pdf.worker.local.js" defer></script>
+  <script src="pdf.viewer.local.js" defer></script>
+  <script src="pdf.local-runtime.js" defer></script>
   <script src="geometry.js" defer></script>
   <script src="pdf-engine.js" defer></script>
   <script src="app.js" defer></script>
 </head>
 <body>
   <header class="app-header">
-    <a class="brand" href="./" aria-label="PDFLink, inicio"><img src="icon.svg" alt="" width="36" height="36"><span>PDFLink</span><span class="brand-tag">tu PDF, en local</span></a>
+    <a class="brand" href="index.html" aria-label="PDFLink, inicio"><img src="icon.svg" alt="" width="36" height="36"><span>PDFLink</span><span class="brand-tag">tu PDF, en local</span></a>
     <div class="header-right"><span class="privacy-badge"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 4 6v6c0 5 8 9 8 9s8-4 8-9V6z"/><path d="m8 12 3 3 5-6"/></svg>Procesamiento local</span><button id="help-btn" class="button quiet">Ayuda</button></div>
   </header>
 

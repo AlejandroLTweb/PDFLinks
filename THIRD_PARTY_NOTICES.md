@@ -22,4 +22,6 @@ Fuente: https://github.com/mozilla/pdf.js/releases/tag/v6.5.438.
 
 Archivos distribuidos: `pdf.min.mjs` y `pdf.worker.min.mjs`. Copyright Mozilla Foundation y colaboradores, con los años y avisos indicados en cada archivo. Licencia Apache 2.0, cuyo texto completo se incluye en `APACHE-2.0.txt`.
 
+Las adaptaciones `pdf.viewer.local.js` y `pdf.worker.local.js` se generan con `build-local.cjs` a partir de esos archivos: se envuelven como scripts clásicos, se sustituyen referencias de URL de módulo no usadas en el modo local y se exponen sus interfaces sin un `export` ESM. Conservan todos los avisos de autor y licencia originales. `pdf.local-runtime.js` aporta el arranque local y la creación de workers en memoria.
+
 Los archivos se distribuyen localmente. Los enlaces anteriores son referencias de procedencia y licencia; la aplicación no los consulta durante el uso.

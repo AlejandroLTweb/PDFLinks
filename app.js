@@ -69,9 +69,9 @@ document.addEventListener('DOMContentLoaded',async()=>{
       standardFontDataUrl:new URL('standard_fonts/',document.baseURI).href,
       cMapUrl:new URL('cmaps/',document.baseURI).href,cMapPacked:true,
       wasmUrl:new URL('wasm/',document.baseURI).href,verbosity:0});
-    const proxy=await loadingTask.promise;
     let retained=false;
     try{
+      const proxy=await loadingTask.promise;
       const permissions=await proxy.getPermissions();
       if(permissions && !permissions.includes(pdfjs.PermissionFlag.MODIFY_CONTENTS))
         throw new Error('Este PDF restringe la edición. Utiliza una copia autorizada sin restricciones.');
@@ -360,11 +360,9 @@ document.addEventListener('DOMContentLoaded',async()=>{
   };
 
   update();fillProperties();
-  if(location.protocol==='file:'){
-    toast('Para cargar los módulos locales, abre una terminal en esta carpeta y ejecuta «npm start». Después visita http://127.0.0.1:4177.',true,60000);return;
-  }
   try{
-    pdfjs=await import('./pdf.min.mjs');pdfjs.GlobalWorkerOptions.workerSrc=new URL('pdf.worker.min.mjs',document.baseURI).href;
+    pdfjs=await window.PDFLinkLocalPDFReady;
+    if(!pdfjs?.getDocument)throw new Error('El motor PDF local no está disponible.');
     update();
-  }catch(error){toast('No se ha podido cargar el motor PDF. Conserva los archivos del motor PDF y abre el proyecto con «npm start».',true,60000);}
+  }catch(error){toast('No se ha podido iniciar PDFLink. Extrae la carpeta completa del ZIP y abre index.html con Chrome o Edge actualizado.',true,60000);}
 });
