@@ -20,15 +20,15 @@ Los scripts del visor se incluyen preparados para cargar desde `file://`. El pro
 
 - **Visualizar** PDF, navegar mediante miniaturas y ajustar el zoom.
 - **Unir** varios documentos, cambiar el orden de sus páginas o eliminar páginas.
-- **Añadir textos** con varias líneas, tres familias tipográficas, tamaño, color y negrita.
+- **Añadir textos** con varias líneas, las familias tipográficas disponibles, tamaño, color y negrita.
 - **Insertar imágenes** PNG, JPG, WEBP o BMP, incluidas firmas con fondo transparente.
 - **Dibujar una firma** con ratón, dedo o lápiz digital.
-- **Mover y redimensionar** los elementos arrastrándolos y usando su esquina verde. El panel permite ajustar posiciones y tamaños en puntos PDF.
+- **Mover y redimensionar** los elementos arrastrándolos y usando su esquina naranja. El panel permite ajustar posiciones y tamaños en puntos PDF.
 - **Deshacer y rehacer** durante la sesión.
 - **Exportar** una copia en PDF con texto seleccionable.
 - **Comprimir** imágenes compatibles sin convertir las páginas completas en fotografías.
 
-El botón **Probar con un documento de ejemplo** genera un PDF sin datos personales dentro del navegador.
+El panel de propiedades incluye las capas añadidas a cada página. Selecciona una capa para recuperar su edición. Las páginas también se pueden reorganizar arrastrando sus miniaturas. Las propiedades se actualizan al editarlas y el botón de modo oscuro cambia el tema de la interfaz.
 
 ### Compresión
 

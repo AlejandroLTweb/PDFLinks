@@ -179,6 +179,7 @@
     }
     addOverlay(index,object){this.checkpoint();this.pages[index].overlays.push(G.fitObject(object,this.pages[index]));}
     movePage(index,offset){const next=index+offset;if(next<0||next>=this.pages.length)return index;this.checkpoint();[this.pages[index],this.pages[next]]=[this.pages[next],this.pages[index]];return next;}
+    reorderPage(id,targetId){const from=this.pages.findIndex(p=>p.id===id),to=this.pages.findIndex(p=>p.id===targetId);if(from<0||to<0||from===to)return false;this.checkpoint();const [moving]=this.pages.splice(from,1);this.pages.splice(to,0,moving);return true;}
     deletePage(index){if(this.pages.length<=1)throw new Error('El documento debe conservar al menos una página.');this.checkpoint();this.pages.splice(index,1);}
     get inputSize(){return [...this.sources.values()].reduce((sum,s)=>sum+s.bytes.length,0);}
     async export(mode='lossless',options={}) {

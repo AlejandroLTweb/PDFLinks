@@ -83,6 +83,17 @@ test('history tracks saved state across undo and new branches',()=>{
   pages=h.undo(pages);h.checkpoint(pages);pages.pop();assert.equal(h.redoStack.length,0);assert.equal(h.dirty,true);
 });
 
+test('drag page reordering preserves its layers and can be undone',async()=>{
+  const {project}=await projectWithSource(),second=await source('SECOND');
+  await project.addSource(second.bytes,'Segundo.pdf',second.descriptors);
+  const layer=await project.createText('Capa conservada');project.addOverlay(0,layer);
+  const id=project.pages[0].id,target=project.pages[1].id;
+  assert.equal(project.reorderPage(id,target),true);
+  assert.equal(project.pages[1].overlays[0].id,layer.id);
+  project.undo();assert.equal(project.pages[0].id,id);
+  assert.equal(project.reorderPage(id,id),false);
+});
+
 test('text measurements handle Spanish characters and reject unsupported emoji',async()=>{
   const {project}=await projectWithSource();const object=await project.createText('áéíóú ñ ¿Qué? ¡Sí! €');assert.ok(object.width>20);
   await assert.rejects(project.createText('Una firma 😀'),/carácter no compatible/);
