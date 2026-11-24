@@ -1,9 +1,9 @@
 /* PDFLink — PDF export and image optimization, entirely in memory. */
 (function(root,factory) {
   if (typeof module==='object' && module.exports)
-    module.exports=factory(require('./pdf-lib.min.js'),require('./geometry.js'));
-  else root.PDFLinkPDF=factory(root.PDFLib,root.PDFLinkGeometry);
-})(typeof globalThis!=='undefined'?globalThis:this,function(P,G) {
+    module.exports=factory(require('./pdf-lib.min.js'),require('./geometry.js'),require('./nunito-font.js'));
+  else root.PDFLinkPDF=factory(root.PDFLib,root.PDFLinkGeometry,root.PDFLinkNunito);
+})(typeof globalThis!=='undefined'?globalThis:this,function(P,G,Nunito) {
   'use strict';
   const name=value=>P.PDFName.of(value);
   const number=(context,dict,key,fallback=0)=>{
@@ -161,6 +161,7 @@
       return id;
     }
     async measure(object) {
+      if(object.font==='NunitoSans')return {width:Math.max(8,Nunito.measure(object))+2,height:Math.max(1,object.text.split('\n').length)*object.size*1.2,baseline:object.size*.95};
       this.measurementDocument ||= await P.PDFDocument.create();
       const key=fontName(object);
       if(!this.measurementFonts.has(key))this.measurementFonts.set(key,await this.measurementDocument.embedFont(key));
@@ -203,8 +204,8 @@
         for(const object of model.overlays) {
           page.pushOperators(P.pushGraphicsState(),P.concatTransformationMatrix(...G.placement(model,object)));
           if(object.kind==='text') {
-            const key=fontName(object);
-            if(!fonts.has(key))fonts.set(key,await document.embedFont(key));
+            const custom=object.font==='NunitoSans',key=custom?'NunitoSans-'+object.bold:fontName(object);
+            if(!fonts.has(key))fonts.set(key,custom?Nunito.embed(document,object):await document.embedFont(key));
             const font=fonts.get(key),[r,g,b]=hexRGB(object.color);
             for(const [row,line]of object.text.split('\n').entries())if(line)
               page.drawText(line,{x:1,y:object.height-object.size*.95-row*object.size*1.2,

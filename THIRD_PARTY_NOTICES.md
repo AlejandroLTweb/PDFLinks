@@ -25,3 +25,11 @@ Archivos distribuidos: `pdf.min.mjs` y `pdf.worker.min.mjs`. Copyright Mozilla F
 Las adaptaciones `pdf.viewer.local.js` y `pdf.worker.local.js` se generan con `build-local.cjs` a partir de esos archivos: se envuelven como scripts clásicos, se sustituyen referencias de URL de módulo no usadas en el modo local y se exponen sus interfaces sin un `export` ESM. Conservan todos los avisos de autor y licencia originales. `pdf.local-runtime.js` aporta el arranque local y la creación de workers en memoria.
 
 Los archivos se distribuyen localmente. Los enlaces anteriores son referencias de procedencia y licencia; la aplicación no los consulta durante el uso.
+
+## Nunito Sans
+
+Fuentes aportadas por el usuario: NunitoSans-VariableFont_YTLC,opsz,wdth,wght.ttf y NunitoSans-Bold.ttf. Copyright 2016 The Nunito Sans Project Authors y The Nunito Project Authors. Licencia SIL Open Font License 1.1, incluida en OFL-NunitoSans.txt.
+
+Los datos se distribuyen en nunito-data.js. Para compatibilidad con PDF, la variable se fija en sus contornos y métricas por defecto (peso 200, ancho 100, óptico 12 y YTLC 500), retirando las tablas de variación y recalculando las sumas del SFNT. La negrita mantiene el peso 700 del archivo estático. Se conservan los avisos y metadatos originales. No se incluye Nunito (familia distinta de Nunito Sans).
+
+nunito-font.js mide y codifica los glifos TrueType de esas dos fuentes e incorpora FontFile2, CIDFontType2 y ToUnicode al PDF. No depende de una fuente instalada ni realiza descargas.

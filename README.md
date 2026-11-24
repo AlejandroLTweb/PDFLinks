@@ -20,7 +20,7 @@ Los scripts del visor se incluyen preparados para cargar desde `file://`. El pro
 
 - **Visualizar** PDF, navegar mediante miniaturas y ajustar el zoom.
 - **Unir** varios documentos, cambiar el orden de sus páginas o eliminar páginas.
-- **Añadir textos** con varias líneas, las familias tipográficas disponibles, tamaño, color y negrita.
+- **Añadir textos** con varias líneas, Arial/Helvetica, Times, Courier y Nunito Sans, tamaño, color y negrita.
 - **Insertar imágenes** PNG, JPG, WEBP o BMP, incluidas firmas con fondo transparente.
 - **Dibujar una firma** con ratón, dedo o lápiz digital.
 - **Mover y redimensionar** los elementos arrastrándolos y usando su esquina naranja. El panel permite ajustar posiciones y tamaños en puntos PDF.
@@ -116,3 +116,7 @@ Para regenerar los archivos de distribución después de actualizar los motores 
 ## Licencias
 
 El código propio del proyecto se ofrece bajo licencia **MIT**. Los motores incluidos conservan sus licencias y avisos de autor. Consulta **THIRD_PARTY_NOTICES.md** y **APACHE-2.0.txt**.
+
+## Nunito Sans
+
+Selecciona **Nunito Sans (ligera / negrita)** en las propiedades del texto. La variante ligera usa el peso 200 por defecto de la fuente facilitada; activa **Negrita** para usar el peso 700. Ambas fuentes están incluidas en la carpeta y se incrustan al exportar: el texto sigue siendo seleccionable y no necesitas instalarlas. Se incluyen sus licencias en OFL-NunitoSans.txt.

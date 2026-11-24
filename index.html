@@ -14,6 +14,8 @@
   <script src="pdf.viewer.local.js" defer></script>
   <script src="pdf.local-runtime.js" defer></script>
   <script src="geometry.js" defer></script>
+  <script src="nunito-data.js" defer></script>
+  <script src="nunito-font.js" defer></script>
   <script src="pdf-engine.js" defer></script>
   <script src="app.js" defer></script>
 </head>
@@ -61,7 +63,7 @@
       <div class="panel-heading"><h2>Propiedades</h2><button id="close-props-btn" class="text-button mobile-only" aria-label="Cerrar propiedades">Cerrar</button></div>
       <section class="layers-section"><div class="panel-heading"><h3>Capas de esta página</h3><span id="layer-count" class="count">0</span></div><div id="layers-list" class="layers-list"></div></section><div id="selection-empty" class="selection-empty"><div class="selection-mark" aria-hidden="true">T<span>✎</span></div><h3>Un toque personal</h3><p>Añade tu nombre, coloca una imagen o dibuja tu firma. Selecciona un elemento para editarlo.</p><div class="tip"><strong>Muévelo a tu manera</strong><p>Arrastra para colocarlo. Usa la esquina naranja para cambiar su tamaño.</p></div></div>
       <form id="properties-form" hidden>
-        <div id="text-properties"><label for="text-content">Contenido del texto</label><textarea id="text-content" rows="4" spellcheck="false"></textarea><label for="font-family">Tipografía</label><select id="font-family"><option value="Helvetica">Arial / Helvetica</option><option value="Times">Times</option><option value="Courier">Courier</option></select><div class="field-row"><div><label for="font-size">Tamaño (pt)</label><input id="font-size" type="number" min="4" max="240" step="1" value="20"></div><div class="check-field"><label><input id="font-bold" type="checkbox">Negrita</label></div></div><div class="color-row"><label for="text-color">Color de texto</label><input id="text-color" type="color" value="#172b42"></div></div>
+        <div id="text-properties"><label for="text-content">Contenido del texto</label><textarea id="text-content" rows="4" spellcheck="false"></textarea><label for="font-family">Tipografía</label><select id="font-family"><option value="Helvetica">Arial / Helvetica</option><option value="Times">Times</option><option value="Courier">Courier</option><option value="NunitoSans">Nunito Sans (ligera / negrita)</option></select><div class="field-row"><div><label for="font-size">Tamaño (pt)</label><input id="font-size" type="number" min="4" max="240" step="1" value="20"></div><div class="check-field"><label><input id="font-bold" type="checkbox">Negrita</label></div></div><div class="color-row"><label for="text-color">Color de texto</label><input id="text-color" type="color" value="#172b42"></div></div>
         <div class="field-row"><div><label for="pos-x">Posición X (pt)</label><input id="pos-x" type="number" min="0" step="1"></div><div><label for="pos-y">Posición Y (pt)</label><input id="pos-y" type="number" min="0" step="1"></div></div>
         <div id="image-properties"><div class="field-row"><div><label for="obj-width">Ancho (pt)</label><input id="obj-width" type="number" min="2" max="20000" step="1"></div><div><label for="obj-height">Alto (pt)</label><input id="obj-height" type="number" min="2" max="20000" step="1"></div></div><label class="check-label"><input id="lock-ratio" type="checkbox" checked>Mantener proporción</label></div>
         <button id="delete-object-btn" class="button danger full" type="button">Eliminar elemento</button><p class="field-note">72 pt equivalen a 2,54 cm.</p>

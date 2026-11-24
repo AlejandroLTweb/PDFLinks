@@ -1,6 +1,6 @@
 {
   "name": "pdflink",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "private": true,
   "description": "Editor PDF local en HTML, CSS y JavaScript. Sin subidas de documentos.",
   "license": "MIT",
@@ -9,7 +9,7 @@
     "open": "node serve.mjs --open",
     "test": "node --test *.test.cjs",
     "build:local": "node build-local.cjs",
-    "check": "node --check app.js && node --check pdf-engine.js && node --check geometry.js && node --check pdf.viewer.local.js && node --check pdf.worker.local.js && node --check pdf.local-runtime.js && node --check serve.mjs"
+    "check": "node --check nunito-font.js && node --check nunito-data.js && node --check app.js && node --check pdf-engine.js && node --check geometry.js && node --check pdf.viewer.local.js && node --check pdf.worker.local.js && node --check pdf.local-runtime.js && node --check serve.mjs"
   },
   "engines": {
     "node": ">=22.13"

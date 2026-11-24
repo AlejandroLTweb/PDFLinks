@@ -18,6 +18,31 @@ async function source(text='ORIGINAL',rotation=0,cropped=false){
   const bytes=await document.save({useObjectStreams:false});return {bytes,descriptors:[descriptor(page)]};
 }
 async function projectWithSource(options=[]){const input=await source(...options),project=new PDFProject();await project.addSource(input.bytes,'Prueba.pdf',input.descriptors);project.history=new G.History();return{project,input};}
+
+test('Nunito Sans light and bold embed real glyphs and retain selectable Unicode text',async()=>{
+  Map.prototype.getOrInsertComputed ||= function(key,callback){if(!this.has(key))this.set(key,callback(key));return this.get(key);};
+  globalThis.DOMMatrix ||= class DOMMatrix {};
+  Uint8Array.prototype.toHex ||= function(){return Buffer.from(this).toString('hex');};
+  const {pathToFileURL}=require('node:url');
+  const reader=await import(pathToFileURL(path.join(__dirname,'pdf.min.mjs')).href);
+  reader.GlobalWorkerOptions.workerSrc=pathToFileURL(path.join(__dirname,'pdf.worker.min.mjs')).href;
+  const {project}=await projectWithSource();
+  const text='Alejandro: España, València · 123 €';
+  const widths=[];
+  for(const bold of [false,true]){
+    const object=await project.createText(text,20);object.font='NunitoSans';object.bold=bold;
+    Object.assign(object,await project.measure(object));object.y=bold?150:90;widths.push(object.width);project.addOverlay(0,object);
+  }
+  assert.notEqual(widths[0],widths[1]);
+  await assert.rejects(project.measure({text:'\u{1f680}',size:20,font:'NunitoSans'}),/no admite/);
+  const result=await project.export(),doc=await P.PDFDocument.load(result.bytes);
+  const fonts=doc.context.enumerateIndirectObjects().map(([,o])=>o).filter(o=>o instanceof P.PDFDict&&String(o.get(P.PDFName.of('Subtype')))==='/CIDFontType2');
+  assert.equal(fonts.length,2);
+  for(const font of fonts){const descriptor=doc.context.lookup(font.get(P.PDFName.of('FontDescriptor')));assert.ok(descriptor.has(P.PDFName.of('FontFile2')));}
+  const loading=reader.getDocument({data:result.bytes.slice(),useWasm:false,useSystemFonts:false,disableFontFace:true,verbosity:0});
+  try{const pdf=await loading.promise,page=await pdf.getPage(1),content=await page.getTextContent();assert.equal(content.items.filter(item=>item.str===text).length,2);await page.getOperatorList();}
+  finally{await loading.destroy();}
+});
 function streams(document,page){
   const contents=page.node.Contents();
   const refs=contents instanceof P.PDFArray?contents.asArray():contents?[contents]:[];

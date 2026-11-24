@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded',async()=>{
   const page=()=>project.pages[current];
   const selected=()=>page()?.overlays.find(o=>o.id===selectedId);
   const size=bytes=>bytes<1048576?`${(bytes/1024).toFixed(1)} KB`:`${(bytes/1048576).toFixed(2)} MB`;
-  const fontCSS=object=>({Helvetica:'Arial, Helvetica, sans-serif',Times:'"Times New Roman", Times, serif',Courier:'"Courier New", monospace'}[object.font||'Helvetica']);
+  const fontCSS=object=>({NunitoSans:'"PDFLink Nunito Sans", sans-serif',Helvetica:'Arial, Helvetica, sans-serif',Times:'"Times New Roman", Times, serif',Courier:'"Courier New", monospace'}[object.font||'Helvetica']);
   const nextFrame=()=>new Promise(resolve=>requestAnimationFrame(resolve));
 
   function toast(message,error=false,duration=6500){
@@ -182,7 +182,7 @@ document.addEventListener('DOMContentLoaded',async()=>{
 
   function objectStyle(element,object){
     Object.assign(element.style,{left:`${object.x}px`,top:`${object.y}px`,width:`${object.width}px`,height:`${object.height}px`});
-    if(object.kind==='text')Object.assign(element.style,{fontFamily:fontCSS(object),fontSize:`${object.size}px`,fontWeight:object.bold?'700':'400',color:object.color});
+    if(object.kind==='text')Object.assign(element.style,{fontFamily:fontCSS(object),fontSize:`${object.size}px`,fontWeight:object.bold?'700':object.font==='NunitoSans'?'200':'400',color:object.color});
   }
   function renderOverlays(){
     const layer=$('overlay-layer');layer.replaceChildren();
@@ -372,6 +372,7 @@ document.addEventListener('DOMContentLoaded',async()=>{
 
   update();fillProperties();
   try{
+    await window.PDFLinkNunito.load();
     pdfjs=await window.PDFLinkLocalPDFReady;
     if(!pdfjs?.getDocument)throw new Error('El motor PDF local no está disponible.');
     update();
