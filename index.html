@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Visualiza, une, comprime y completa tus PDF en tu navegador. Sin subir documentos a ningún servidor.">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data: blob:; connect-src 'self'; worker-src 'self' blob:; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <meta name="referrer" content="no-referrer">
+  <title>PDFLink · Tus PDF, en local</title>
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css">
+  <script src="pdf-lib.min.js" defer></script>
+  <script src="geometry.js" defer></script>
+  <script src="pdf-engine.js" defer></script>
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <header class="app-header">
+    <a class="brand" href="./" aria-label="PDFLink, inicio"><img src="icon.svg" alt="" width="36" height="36"><span>PDFLink</span><span class="brand-tag">tu PDF, en local</span></a>
+    <div class="header-right"><span class="privacy-badge"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 4 6v6c0 5 8 9 8 9s8-4 8-9V6z"/><path d="m8 12 3 3 5-6"/></svg>Procesamiento local</span><button id="help-btn" class="button quiet">Ayuda</button></div>
+  </header>
+
+  <nav class="toolbar" aria-label="Herramientas PDF">
+    <div class="tool-group"><button id="open-btn" class="button">Abrir PDF</button><button id="merge-btn" class="button">Unir PDF</button></div>
+    <span class="divider" aria-hidden="true"></span>
+    <div class="tool-group"><button id="add-text-btn" class="button" disabled><b class="tool-glyph">T</b>Texto</button><button id="add-image-btn" class="button" disabled><span class="tool-glyph">▧</span>Imagen</button><button id="signature-btn" class="button" disabled><span class="tool-glyph">✎</span>Firma</button></div>
+    <div class="tool-group history-tools"><button id="undo-btn" class="button icon-button" title="Deshacer (Ctrl+Z)" aria-label="Deshacer" disabled>↶</button><button id="redo-btn" class="button icon-button" title="Rehacer (Ctrl+Y)" aria-label="Rehacer" disabled>↷</button></div>
+    <button id="props-btn" class="button compact-props" aria-expanded="false">Propiedades</button>
+    <button id="export-btn" class="button primary" disabled>Exportar PDF</button>
+  </nav>
+
+  <main class="workspace">
+    <aside class="pages-panel" aria-label="Páginas del documento">
+      <div class="panel-heading"><h2>Páginas</h2><span id="page-total" class="count">0</span></div>
+      <div id="page-list" class="page-list" aria-label="Seleccionar página"><p class="empty-pages">Tus páginas aparecerán aquí.</p></div>
+      <div class="page-actions"><button id="move-up-btn" class="button icon-button" aria-label="Mover página al principio" title="Mover antes" disabled>↑</button><button id="move-down-btn" class="button icon-button" aria-label="Mover página al final" title="Mover después" disabled>↓</button><button id="delete-page-btn" class="button" disabled>Eliminar</button></div>
+    </aside>
+
+    <section id="editor" class="editor" aria-label="Visor y editor PDF">
+      <div id="welcome" class="welcome">
+        <div class="welcome-art" aria-hidden="true"><div class="art-page back"></div><div class="art-page front"><img src="icon.svg" alt=""><span></span><span></span><span></span><i></i></div><div class="art-badge">PDF</div></div>
+        <span class="eyebrow">SIN CUENTAS. SIN SUBIDAS.</span>
+        <h1>Tus documentos.<br><span>Siempre en tus manos.</span></h1>
+        <p>Une, completa y comprime tus PDF.<br>Todo sucede en tu navegador, en este ordenador.</p>
+        <button id="welcome-open-btn" class="button primary large">Seleccionar archivos PDF</button>
+        <span class="drop-hint">También puedes arrastrarlos a esta ventana</span>
+        <button id="demo-btn" class="text-button">Probar con un documento de ejemplo</button>
+        <div class="welcome-features"><span>Texto e imágenes</span><span>Firma dibujada</span><span>Exportación PDF</span></div>
+      </div>
+      <div id="document-stage" class="document-stage" hidden>
+        <div class="document-strip"><span id="document-name">Documento</span><span id="document-status">Sin cambios</span></div>
+        <div id="page-scroll" class="page-scroll"><div id="page-wrapper" class="page-wrapper"><canvas id="pdf-canvas" aria-label="Vista previa de la página"></canvas><div id="overlay-layer" class="overlay-layer" aria-label="Elementos añadidos"></div></div></div>
+      </div>
+      <div id="drop-zone" class="drop-zone" hidden><div>Suelta tus PDF aquí<span>Se añadirán al documento actual</span></div></div>
+    </section>
+
+    <aside id="properties-panel" class="properties-panel" aria-label="Propiedades del elemento">
+      <div class="panel-heading"><h2>Propiedades</h2><button id="close-props-btn" class="text-button mobile-only" aria-label="Cerrar propiedades">Cerrar</button></div>
+      <div id="selection-empty" class="selection-empty"><div class="selection-mark" aria-hidden="true">T<span>✎</span></div><h3>Un toque personal</h3><p>Añade tu nombre, coloca una imagen o dibuja tu firma. Selecciona un elemento para editarlo.</p><div class="tip"><strong>Muévelo a tu manera</strong><p>Arrastra para colocarlo. Usa la esquina verde para cambiar su tamaño.</p></div></div>
+      <form id="properties-form" hidden>
+        <div id="text-properties"><label for="text-content">Contenido del texto</label><textarea id="text-content" rows="4" spellcheck="false"></textarea><label for="font-family">Tipografía</label><select id="font-family"><option value="Helvetica">Arial / Helvetica</option><option value="Times">Times</option><option value="Courier">Courier</option></select><div class="field-row"><div><label for="font-size">Tamaño (pt)</label><input id="font-size" type="number" min="4" max="240" step="1" value="20"></div><div class="check-field"><label><input id="font-bold" type="checkbox">Negrita</label></div></div><div class="color-row"><label for="text-color">Color de texto</label><input id="text-color" type="color" value="#172b42"></div></div>
+        <div class="field-row"><div><label for="pos-x">Posición X (pt)</label><input id="pos-x" type="number" min="0" step="1"></div><div><label for="pos-y">Posición Y (pt)</label><input id="pos-y" type="number" min="0" step="1"></div></div>
+        <div id="image-properties"><div class="field-row"><div><label for="obj-width">Ancho (pt)</label><input id="obj-width" type="number" min="2" max="20000" step="1"></div><div><label for="obj-height">Alto (pt)</label><input id="obj-height" type="number" min="2" max="20000" step="1"></div></div><label class="check-label"><input id="lock-ratio" type="checkbox" checked>Mantener proporción</label></div>
+        <button class="button primary full" type="submit">Aplicar cambios</button><button id="delete-object-btn" class="button danger full" type="button">Eliminar elemento</button><p class="field-note">72 pt equivalen a 2,54 cm.</p>
+      </form>
+      <div class="local-note"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg><div><strong>El archivo se queda contigo</strong><p>No guardamos tus documentos ni tus firmas. Exporta tu PDF antes de cerrar.</p></div></div>
+    </aside>
+  </main>
+
+  <footer class="statusbar"><div class="status-left"><button id="pages-toggle-btn" class="text-button" aria-expanded="false">Páginas</button><span id="status-message" role="status">Listo para trabajar sin subir archivos.</span></div><div class="viewer-controls"><label for="page-number" class="sr-only">Página actual</label><input id="page-number" type="number" min="1" value="1" disabled><span id="page-counter">/ 0</span><span class="divider"></span><button id="zoom-out-btn" class="text-button" aria-label="Reducir zoom">−</button><span id="zoom-label">100 %</span><button id="zoom-in-btn" class="text-button" aria-label="Aumentar zoom">+</button><button id="fit-btn" class="text-button">Ajustar</button></div></footer>
+
+  <input type="file" id="pdf-input" accept="application/pdf,.pdf" multiple hidden>
+  <input type="file" id="image-input" accept="image/png,image/jpeg,image/webp,image/bmp" hidden>
+  <div id="toast" class="toast" role="status" hidden></div>
+
+  <dialog id="text-dialog"><form id="new-text-form"><div class="dialog-heading"><div><span class="eyebrow">TU TOQUE PERSONAL</span><h2>Añadir texto</h2></div><button type="button" data-close class="close-button" aria-label="Cerrar">×</button></div><label for="new-text">¿Qué quieres escribir?</label><textarea id="new-text" rows="4" placeholder="Tu nombre, una fecha, una nota…" required></textarea><p class="field-note">Después podrás moverlo y cambiar su tamaño.</p><div class="dialog-actions"><button type="button" data-close class="button">Cancelar</button><button type="submit" class="button primary">Añadir texto</button></div></form></dialog>
+
+  <dialog id="signature-dialog"><div class="dialog-heading"><div><span class="eyebrow">HECHA POR TI</span><h2>Dibuja tu firma</h2></div><button type="button" data-close class="close-button" aria-label="Cerrar">×</button></div><p>Usa el ratón, el dedo o tu lápiz digital.</p><canvas id="signature-canvas" width="1200" height="440" aria-label="Área para dibujar una firma"></canvas><p class="field-note">Firma visual con fondo transparente. No es una firma con certificado digital.</p><div class="dialog-actions"><button id="clear-signature-btn" class="button">Borrar</button><div class="spacer"></div><button data-close class="button">Cancelar</button><button id="use-signature-btn" class="button primary">Añadir firma</button></div></dialog>
+
+  <dialog id="export-dialog"><form id="export-form"><div class="dialog-heading"><div><span class="eyebrow">LISTO PARA LLEVAR</span><h2>Exportar tu PDF</h2></div><button type="button" data-close class="close-button" aria-label="Cerrar">×</button></div><label for="export-name">Nombre del archivo</label><input id="export-name" type="text" required maxlength="160"><fieldset class="compression-options"><legend>Compresión</legend><label class="compression-option"><input type="radio" name="compression" value="lossless" checked><span><strong>Sin pérdida</strong><small>Optimiza la estructura manteniendo la calidad original.</small></span><b>Original</b></label><label class="compression-option"><input type="radio" name="compression" value="balanced"><span><strong>Equilibrada</strong><small>Reduce imágenes compatibles. Conserva texto y vectores.</small></span><b>Recomendada</b></label><label class="compression-option"><input type="radio" name="compression" value="small"><span><strong>Tamaño reducido</strong><small>Mayor compresión de imagen. Puede perder detalle.</small></span><b>Ligero</b></label></fieldset><div class="export-note">La reducción depende del PDF. Los originales se conservan. Editar un documento firmado puede invalidar su firma digital.</div><div class="dialog-actions"><button type="button" data-close class="button">Cancelar</button><button type="submit" class="button primary">Descargar PDF</button></div></form></dialog>
+
+  <dialog id="help-dialog"><div class="dialog-heading"><h2>Un espacio para tus PDF</h2><button data-close class="close-button" aria-label="Cerrar">×</button></div><div class="help-content"><h3>Abre, completa y exporta</h3><p>Abre uno o varios PDF. Añade texto, imágenes o una firma y arrástralos sobre la página. La esquina verde cambia el tamaño. El panel de propiedades permite ajustes precisos.</p><h3>Une y organiza</h3><p>«Unir PDF» añade documentos al final. Selecciona una página y utiliza los controles para cambiar su posición o eliminarla.</p><h3>Privacidad</h3><p>Los PDF se leen en memoria y se procesan en tu navegador. No hay subidas, cuentas, analítica ni almacenamiento automático de documentos. Las bibliotecas también están incluidas en el proyecto.</p><h3>Qué puedes editar</h3><p>Puedes editar los elementos que añades durante esta sesión. El texto y las imágenes originales del PDF no se modifican. Al reabrir un PDF exportado, los añadidos forman parte de su contenido.</p><h3>Compresión y compatibilidad</h3><p>Se optimizan imágenes JPEG y algunas imágenes RGB o grises. Se conservan las transparencias y las imágenes no compatibles. No se rasterizan páginas completas. Algunos PDF ya optimizados apenas se reducirán. Los PDF cifrados deben abrirse antes como una copia autorizada sin contraseña.</p><p>Al unir o reorganizar documentos, algunos marcadores, formularios o enlaces internos pueden perder su estructura. Revisa estos elementos si los necesitas.</p><h3>Atajos</h3><p>Ctrl+O: abrir · Ctrl+S: exportar · Ctrl+Z: deshacer · Ctrl+Y: rehacer · Supr: eliminar elemento · Escape: deseleccionar.</p></div></dialog>
+
+  <dialog id="confirm-dialog"><h2 id="confirm-title">¿Descartar los cambios?</h2><p id="confirm-description">Hay cambios sin exportar.</p><div class="dialog-actions"><button id="confirm-cancel" class="button">Cancelar</button><button id="confirm-accept" class="button primary">Continuar</button></div></dialog>
+  <dialog id="busy-dialog" aria-labelledby="busy-title"><div class="busy-icon" aria-hidden="true"></div><h2 id="busy-title">Preparando tu PDF</h2><p id="busy-message">Procesando en este dispositivo…</p><progress id="busy-progress" max="100" value="0"></progress><p class="field-note">El documento no sale de tu navegador.</p></dialog>
+  <noscript><div class="fatal-notice">Activa JavaScript para usar PDFLink. Todo el procesamiento se realiza en este navegador.</div></noscript>
+</body>
+</html>

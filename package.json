@@ -1,0 +1,15 @@
+{
+  "name": "pdflink",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Editor PDF local en HTML, CSS y JavaScript. Sin subidas de documentos.",
+  "license": "MIT",
+  "scripts": {
+    "start": "node serve.mjs",
+    "open": "node serve.mjs --open",
+    "test": "node --test *.test.cjs",
+    "check": "node --check app.js && node --check pdf-engine.js && node --check geometry.js && node --check serve.mjs"
+  },
+  "engines": { "node": ">=22.13" },
+  "repository": { "type": "git", "url": "https://github.com/AlejandroLTweb/PDFLinks.git" }
+}
